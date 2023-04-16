@@ -1,0 +1,34 @@
+<!-- we're inherit the main template with: extends 'store/main.html' 
+the NavBar that we made in the main.html will be in this template for the inherit.-->
+{% extends 'store/main.html'%}
+{% block content %}
+{% load static %}
+<!-- this is for load our main.css-->
+<!-- with {% static 'css/main.css'%}  we're saying go to the static folder and find the css/main.css-->
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+<div class="container">
+    <div class="row">
+            {%for product in products%}
+            <div class="col-12 col-xl-4 col-md-6 my-3">
+                <!-- Card bootstrap -->
+                <div class="card h-100">
+                    <img class="card-img-top" src="{{product.imageURL}}" alt="...">
+                    <div class="card-body">
+                        <h6><strong>{{product.name}}</strong></h6>
+                        <hr>
+                        <!-- With (data) we can add customize attributes to our labels -->
+                        <!-- data-product: (is the name, we can put the name we want.) and we add values. -->
+                        <!-- data-action: With this we're saying the actions that will do the button.-->
+                        <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary update-cart">add to cart</button>
+                        <a class="btn btn-outline-success" href="#">View</a>
+                        <h4 style="float: right;">${{product.price|floatformat:2}}</h4>
+                    </div>
+                </div>
+            </div>      
+            {%endfor%}
+    </div>
+</div>
+
+<script src="{%static 'js/cart.js'%}"></script>
+{% endblock content %}

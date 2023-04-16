@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,7 +119,22 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    # this is add our static folder
+    os.path.join(BASE_DIR, 'static')
+]
+
+# this allow get images URL for each image.
+# We need to add this to urls.py
+MEDIA_URL = '/images/'
+
+# see store/models.py
+# Say where the images will be stored
+# go to urls.py
+MEDIA_ROOT = os.path.join(BASE_DIR,'static/images')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

@@ -1,0 +1,76 @@
+<!-- we're inherit the main template with: extends 'store/main.html' 
+the NavBar that we made in the main.html will be in this template for the inherit.-->
+{% extends 'store/main.html'%} 
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+<div class="container">
+    <div class="row shadow-row rounded-1">
+        <div class="col-7 col-xl-4  my-3">
+            <!-- &#x2190;: This is the to add the simbol(<--) -->
+            <a class="btn btn-outline-secondary" href="{%url 'store'%}">&#x2190;Continue Shopping</a>        
+        </div>
+        <hr/>
+
+        <!-- Force a new line -->
+        <div class="w-100"></div>
+
+        <div class="col my-2">
+            <div class="row">
+                <div class="col-3">
+                    <h4>items: {{order.get_total_item}}</h4>
+                </div>
+
+                <div class="col-4">
+                    <h4>Total: {{order.get_cart_total|floatformat:2}}</h4>
+                </div>
+
+                <div class="col-5 text-end">
+                    <a class="btn btn-success" data-digital="{{digital}}" id="checkout" href="{%url 'checkout'%}">Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>   
+
+    <div class="row shadow-row rounded-1 my-5 py-1">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {%for item in items%}
+                    <tr>
+                        <td><img src={{item.product.imageURL}} alt="" class="cart-image"></td>
+
+                        <td>{{item.product.name}}</td>
+                        <td>{{item.product.price}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-1 text-end">
+                                    <p class="fw-bold">{{item.quantity}}</p>
+                                </div>
+
+                                <div class="col-1">
+                                    <button class="btn-row update-cart" data-action='add' data-product={{item.product.id}}><img class="arrow-image" src="{%static 'images/arrow-up.png'%}" alt=""></button>
+                                    <button class="btn-row update-cart" data-action='remove'data-product={{item.product.id}}><img class="arrow-image" src="{%static 'images/arrow-down.png'%}"  alt=""></button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{item.get_total|floatformat:2 }}</td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>  
+</div>
+{% endblock content %}
