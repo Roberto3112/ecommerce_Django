@@ -5,45 +5,55 @@ the NavBar that we made in the main.html will be in this template for the inheri
 {% load static %}
 <link rel="stylesheet" href="{%static 'css/main.css'%}">
 
-{%if digital == 'False'%}
     <div class="row w-100">
-        <div class="col-12 my-5 mx-3 shipping-card">
-            <form>
-                <div class="row py-2">
-                <div class="col-6 ">
-                    <input type="text" class="form-control" placeholder="Name...">
-                </div>
+        <div class="col-12 my-5 mx-3 shipping-card" id="shipping-div">
+            <form id="form">
+                <div class="row py-2" id="name-info">
+                    <div class="col-6 ">
+                        <input type="text" class="form-control" name="name" placeholder="Name...">
+                    </div>
 
-                <div class="col-6 ">
-                    <input type="text" class="form-control" placeholder="Email">
+                    <div class="col-6 ">
+                        <input type="text" class="form-control" name="email" placeholder="Email">
+                    </div>
                 </div>
-                </div>
-                
-                <hr>
-                <p>Shipping information:</p>
-                <hr>
+                                
+                <div class="row" id="shipping-info">
+                    <hr>
+                    <p>Shipping information:</p>
+                    <hr>
 
-                <div class="row">
                     <div class="col-6">
-                    <input type="text" class="form-control" placeholder="Address...">
+                        <input type="text" class="form-control" name="address" placeholder="Address...">
                     </div>
     
                     <div class="col-6">
-                    <input type="text" class="form-control" placeholder="City...">
+                        <input type="text" class="form-control" name="city" placeholder="City...">
                     </div>
 
                     <div class="col-6 py-3">
-                        <input type="text" class="form-control" placeholder="State...">
+                        <input type="text" class="form-control" name="state" placeholder="State...">
                     </div>
         
                     <div class="col-6 py-3">
-                    <input type="text" class="form-control" placeholder="Zip code...">
+                        <input type="text" class="form-control" name="zipcode" placeholder="Zip code...">
                     </div>
                 </div>
 
-                <hr>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-success continue-button" type="button">Continue</button>
+                <div class="d-grid gap-2" id="button-div">
+                    <hr>
+                    <button id="btn-continue" class="btn btn-success continue-button" type="submit">Continue</button>
+                </div>
+
+                <div id="payment-info" class="row justify-content-center hidden">
+                    <hr/>
+                    <div class="col-6"> 
+                        <p>Paypal options</p>
+                    </div>
+
+                    <div class="col-6">
+                        <button id="make-payment" class="btn btn-outline-success mx-3 float-end">make payment</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -89,48 +99,13 @@ the NavBar that we made in the main.html will be in this template for the inheri
         </div>
     </div>
 
-{%else%}
-    <div class="row w-100">
-        <div class="col-12 col-xl-12 my-5 mx-3 shadow-row ">
-            <div class="row">
-                <div class="col-8 py-2">        
-                    <!-- &#x2190;: This is the to add the simbol(<--) -->
-                    <a class="btn btn-outline-secondary" href="{%url 'cart'%}">&#x2190;Back to cart</a>
-                </div>
-                <hr>
 
-                <h2 class="py-1">order Summary</h2>
-                <hr>
+    <script>
+    let shipping = '{{order.shipping}}'
+    let orderTotal = '{{order.get_cart_total}}'
+    let storeUrl = "{%url 'store'%}"
+    </script>
 
-                <div class="col-12">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {%for item in items%}
-                                <tr>
-                                    <td><img class="cart-image" src="{{item.product.imageURL}}" alt=""></td>
-                                    <td>{{item.product.name}}</td>
-                                    <td>{{item.product.price}}</td>
-                                    <td>x{{item.quantity}}</td>
-                                </tr>
-                            {%endfor%}
-                        </tbody>
-                    </table>
-
-                    <h4>Items: {{order.get_total_item}}</h4>
-                    <h4>Total: {{order.get_cart_total|floatformat:2}}</h4>
-                </div>
-            </div>
-        </div>
-    </div>      
-{%endif%}
+    <script src="/static/js/checkout.js"></script>
 
 {% endblock content %}

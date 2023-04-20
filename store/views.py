@@ -3,6 +3,7 @@ from .models import *
 from django.http import JsonResponse
 from collections import Counter
 import json
+import datetime
 
 # Create your views here.
 def store(request):
@@ -26,7 +27,7 @@ def store(request):
         cartItems = order['get_cart_items']
 
     products = Product.objects.all() 
-    context = {'products':products, 'items':items, 'order':order, 'cartItems':cartItems}
+    context = {'products':products, 'items':items, 'order':order, 'cartItems':cartItems , 'shipping': False}
     return render(request, 'store/store.html', context)
 
 def cart(request):
@@ -47,7 +48,7 @@ def cart(request):
     else:
         items = []
         order = {'get_cart_total':0, 'get_cart_item':0}
-        cartItems = order['get_total_item']
+        cartItems = order['get_cart_item']
 
     context = {'items':items,'order':order,'cartItems':cartItems}
     return render(request, 'store/cart.html', context)
@@ -58,22 +59,12 @@ def checkout(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
-
-    # this for hide or show the shipping form if our product is digital or not.
-        digital = ''
-        for item in items: 
-            if item.product.digital == False:
-                digital = 'False'
-                break
-            else:
-                digital = 'True'
-
+        cartItems = order.get_total_item
     else:
         items = []
-        order = {'get_cart_total':0, 'get_cart_item':0}
-        digital = ''
-
-    context = {'items':items,'order':order, 'digital':digital}
+        order = {'get_cart_total':0, 'get_cart_item':0, 'shipping': False}
+        cartItems = order['get_cart_item']
+    context = {'items':items,'order':order, 'cartItems':cartItems}
     return render(request, 'store/checkout.html', context)
 
 def updateItem(request):
@@ -102,21 +93,36 @@ def updateItem(request):
 
     return JsonResponse('Item was added', safe=False)
 
-# def editCart(request):
-    data = json.loads(request.body)
-    productId = data['productId']
-    action = data['action']
+def processOrder(request):
+        data = json.loads(request.body)
+        shippingInfo = data['shipping']    
+        
+        # Here we're reciving the form dictionary and accesing to the total value.
+        total = float(data['form']['total'])
 
-    orderItem = OrderItem.objects.get(id=productId)
+        # This to add time of the order in our model.
+        transaction_id = datetime.datetime.now().timestamp()
 
-    if action == 'add':
-        orderItem.quantity = (orderItem.quantity + 1)
-    elif action == 'remove':
-        orderItem.quantity = (orderItem.quantity - 1)
-    
-    orderItem.save()
+        if request.user.is_authenticated:
+            customer = request.user.customer
+            order, create = Order.objects.get_or_create(customer=customer, complete=False)
+            order.transaction_id = transaction_id    
 
-    if orderItem.quantity <= 0:
-        orderItem.delete()
-    
-    return JsonResponse("We're editing the cart...", safe=False)
+            if total == float(order.get_cart_total):
+                order.complete = True
+            order.save()
+
+            if order.shipping == True:
+                shippingAddress.objects.create(
+                customer = customer,
+                order = order,
+                address = data['shipping']['address'],
+                city = data['shipping']['city'],
+                state = data['shipping']['state'],
+                zipcode =  data['shipping']['zipcode'],
+                date_added = transaction_id
+                )
+                
+        else:
+            print('User is not logged in')
+        return JsonResponse("We're sending the form",safe=False)

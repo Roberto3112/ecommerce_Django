@@ -15,7 +15,7 @@ class Customer(models.Model):
     
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=7,decimal_places=2)
     # if our product is digital don't need to be shipped, else if is fisical 
     # need to be shipped. True for digital, False for fisical.
     digital = models.BooleanField(default=False, blank=False)
@@ -65,6 +65,15 @@ class Order(models.Model):
         total = sum([item.quantity for item in orderitem])
         return total
 
+    @property
+    def shipping(self):
+        shipping = False
+        items = self.orderitem_set.all()
+        for item in items: 
+            if item.product.digital == False:
+                shipping = True
+        return shipping
+
 class OrderItem(models.Model):
     product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
@@ -77,7 +86,6 @@ class OrderItem(models.Model):
     @property
     def get_total(self):
         total = self.product.price * self.quantity
-        
         return total
 
 class shippingAddress(models.Model):

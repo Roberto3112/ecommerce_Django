@@ -59,7 +59,7 @@
             <a href="{% url 'cart' %}">
              <img  id="cart-icon" src="{% static 'images/cart.png' %}">
              </a>  
-           <p id="cart-total">{{order.get_total_item}}</p>
+           <p id="cart-total">{{cartItems}}</p>
           </form>
         </div>
       </div>
